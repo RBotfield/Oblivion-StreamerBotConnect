@@ -1,0 +1,8 @@
+﻿scn NPRefMessageEx
+
+string_var fstring
+ref rvar
+
+begin Function{fstring, rvar}
+	MessageEx $fstring rvar
+end

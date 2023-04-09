@@ -1,0 +1,28 @@
+scriptname SBCProcessMessage
+
+array_var clientMessage
+array_var command
+string_var messageText
+string_var username
+
+begin function {clientMessage}
+
+	if testexpr (clientMessage->command)
+		let command := clientMessage->command
+		let messageText := clientMessage->messageText
+		let username := clientMessage->username
+		
+		if testexpr (clientMessage->messageText)
+			MessageEX "%z" messageText
+			PrintToConsole "%z" messageText
+		endif
+
+		if testexpr (command->test123)
+			MessageBoxEX "Running %qtest123%q: Message: %z" messageText
+			PrintToConsole "Running %qtest123%q. Message: %z" messageText
+		elseif testexpr (command->spawnNpc)
+			Call SBCSpawnNpc command->spawnNpc
+		endif
+	endif
+
+end

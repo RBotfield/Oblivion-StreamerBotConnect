@@ -1,0 +1,76 @@
+﻿scn NPControlQuestScript
+
+float fQuestDelayTime
+
+short newgame
+long processID 
+float newgametimer
+array_var dataArr
+array_var tagArr
+ref testRef
+
+array_var fxSounds
+
+;GetGameRestarted ; game started (not new player)
+;GetGameLoaded ; game loaded from save
+
+begin MenuMode
+
+if( fQuestDelayTime != 0.001 )
+	set fQuestDelayTime to 0.001
+endif
+
+if(GetGameRestarted)
+	; this is started in the main menu of the game
+	NetworkPipe_StartService 54321
+	;let processID := NetworkPipe_CreateClient "python plauncher.py", 0	
+	let processID := 0
+	SetModLocalData "processID" processID
+
+	;let testRef := NPShouldPayFine
+	;printc "sound ref: %i" testRef
+else
+	; can process messages here, but formIDs will not work until a game is loaded from a save
+	;Call NPControlGetMessages
+endif
+
+end
+
+begin GameMode
+
+if( fQuestDelayTime != 0.001 )
+	set fQuestDelayTime to 0.001
+endif
+
+if(GetGameRestarted)
+	; could start here if you wanted
+	;NetworkPipe_StartService 54321
+	;set processID to NetworkPipe_CreateClient "python.exe soundTest1.py", 0		
+else
+	let dataArr :=Call NPControlGetMessages
+	Call NPControlProcessMessage dataArr
+endif
+
+if(GetGameLoaded)
+	; grab process ID that was written during the main menu startup
+	let processID := GetModLocalData "processID"
+
+	let fxSounds := ar_Construct StringMap
+	let fxSounds["paidthefine"] := NPShouldPayFine
+	let fxSounds["stoptherescum"] := NPStopThereScum
+	let fxSounds["guardsguardsassault"] := NPGuardsGuardsAssault
+
+	if processID == 0
+		;set processID to NetworkPipe_CreateClient "python.exe soundTest1.py", 0
+		SetModLocalData "processID" processID
+	endif
+endif
+
+; shows how to kill the process
+if( processID && 0 )
+	print "pid to kill value: " + $processID
+	NetworkPipe_KillClient processID
+	set processID to 0
+endif
+
+end

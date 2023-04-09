@@ -1,0 +1,28 @@
+scriptName SBCQuestScript
+
+float fQuestDelayTime
+array_var clientMessage
+int size
+
+begin gameMode
+
+	set fQuestDelayTime to 0.001
+
+	if(GetGameRestarted)
+		NetworkPipe_StartService 54321
+		PrintToConsole "Started NetworkPipe on UDP Port 54321"
+	else
+		let clientMessage := NetworkPipe_Receive
+		let size := ar_size(clientMessage)
+		if ( size > 0 )
+			Call SBCProcessMessage clientMessage
+		endif
+	endif
+
+	if(GetGameLoaded)
+		;let fxSounds := ar_Construct StringMap
+		;let fxSounds["paidthefine"] := NPShouldPayFine
+		;let fxSounds["stoptherescum"] := NPStopThereScum
+	endif
+
+end

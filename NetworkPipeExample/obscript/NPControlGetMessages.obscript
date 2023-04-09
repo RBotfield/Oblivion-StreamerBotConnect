@@ -1,0 +1,16 @@
+﻿scn NPControlGetMessages
+
+array_var clientMessage
+long size
+
+begin Function{}
+	let clientMessage := NetworkPipe_Receive
+	let size := ar_size(clientMessage)
+
+	if ( size > 0 )
+		;NetworkPipe_Send clientMessage		
+		;ar_dump clientMessage
+	endif
+
+	SetFunctionValue clientMessage
+end

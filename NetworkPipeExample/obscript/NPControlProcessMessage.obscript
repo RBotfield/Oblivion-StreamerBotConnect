@@ -1,0 +1,89 @@
+﻿scn NPControlProcessMessage
+
+array_var clientMessage
+array_var command
+array_var commandParms
+long size
+ref soundRef
+ref npcRef
+ref actorRef
+string_var messageText
+short npcHostile
+short npcCount
+short haskeys
+
+array_var fxSounds
+
+begin Function{clientMessage}
+	let size := ar_size(clientMessage)
+	let fxSounds := NPControlQuest.fxSounds
+
+	if ( size > 0 )
+		if testexpr ( clientMessage->command )
+			let command := clientMessage->command
+			;printc command
+
+			; play a sound
+			if testexpr ( command->playSound )
+				let soundRef := command->playSound
+				if IsFormValid soundRef
+					;printc "sound ref: %i", soundRef
+					PlaySound soundRef
+				elseif testexpr ( fxSounds[command->playSound] )
+					let soundRef := fxSounds[command->playSound]
+					if IsFormValid soundRef
+						PlaySound soundRef
+					endif
+					;can't get StreamMusic to work
+					;let soundFile := command->playSound
+					;printc "$soundFile"
+					;StreamMusic "$soundFile"
+				endif
+			; spawn an NPC
+			elseif testexpr ( command->spawnNpc )
+				let commandParms := command->spawnNpc
+				let haskeys := 0
+				let haskeys := haskeys + testexpr ( commandParms->objectref)
+				let haskeys := haskeys + testexpr ( commandParms->hostile )
+				let haskeys := haskeys + testexpr ( commandParms->count )
+
+				;if haskeys == 3
+				;if eval( testexpr ( commandParms->objectref ) && testexpr ( commandParms->hostile ) && testexpr ( commandParms->count ) )
+				if eval (ar_HasKey  commandParms "objectref") && eval (ar_HasKey  commandParms "hostile") && eval (ar_HasKey  commandParms "count")
+					let npcRef := commandParms->objectref
+					let npcHostile := #(commandParms->hostile)
+					let npcCount := #(commandParms->count)
+
+					if IsFormValid npcRef
+						label 0
+						if npcCount
+							let actorRef := player.placeatme npcRef, 1, 128, 1
+
+							if npcHostile
+								actorRef.ModDisposition player -90
+								actorRef.StartCombat player
+							endif
+							let npcCount := npcCount - 1 ; decrement loop
+							goto 0
+						endif
+					endif
+				else
+					ar_dump commandParms
+					if eval (ar_HasKey  commandParms "objectref") == 0
+						printc "missing objectref"
+					endif
+					if eval (ar_HasKey  commandParms "hostile") == 0
+						printc "missing hostile"
+					endif
+					if eval (ar_HasKey  commandParms "count") == 0
+						printc "missing count"
+					endif
+				endif
+			; display a message
+			elseif testexpr ( command->showMessage )
+				let messageText := command->showMessage
+				MessageEx "%z" messageText
+			endif
+		endif
+	endif
+end

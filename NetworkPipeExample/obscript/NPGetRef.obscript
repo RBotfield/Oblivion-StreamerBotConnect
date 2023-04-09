@@ -1,0 +1,7 @@
+﻿scn NPGetRef
+
+ref rvar
+
+begin Function{rvar}
+	SetFunctionValue rvar
+end

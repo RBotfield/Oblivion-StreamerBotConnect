@@ -1,0 +1,48 @@
+scriptname SBCSpawnNpc
+
+array_var commandParams
+ref npcRef
+ref actorRef
+short npcCount
+short npcHostile
+string_var npcName
+
+begin function {commandParams}
+
+	if eval (ar_HasKey commandParams "npcRef") && eval (ar_HasKey commandParams "npcHostile") && eval (ar_HasKey commandParams "npcCount")
+        let npcRef := commandParams->npcRef
+        let npcHostile := #(commandParams->npcHostile)
+        let npcCount := #(commandParams->npcCount)
+
+        if IsFormValid npcRef
+			while npcCount
+				let actorRef := player.placeatme npcRef, 1, 128, 1
+
+
+				if eval (ar_HasKey commandParams "npcName")
+					let npcName := commandParams->npcName
+					actorRef.SetActorFullName $npcName
+				endif
+				
+				if npcHostile
+					actorRef.ModDisposition player -90
+					actorRef.StartCombat player
+				endif
+				
+				let npcCount := npcCount - 1
+			loop
+		endif	
+	else
+        ar_dump commandParams
+        if eval (ar_HasKey commandParams "npcRef") == 0
+            PrintToConsole "Missing npcRef"
+        endif
+        if eval (ar_HasKey commandParams "npcHostile") == 0
+            PrintToConsole "Missing npcHostile"
+        endif
+        if eval (ar_HasKey commandParams "npcCount") == 0
+            PrintToConsole "Missing npcCount"
+		endif
+	endif
+	
+end
