@@ -1,0 +1,6 @@
+Deny from All
+
+<FilesMatch "\.(js)$">
+Order allow,deny
+Allow from All
+</FilesMatch>
