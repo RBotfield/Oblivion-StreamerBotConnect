@@ -1,0 +1,4 @@
+// Follower Action
+// Action Type: UDP Broadcast
+// UDP Port: 54321
+{"command":{"spawnNpc":{"npcRef":"ref:000AED40", "npcHostile":"0", "npcCount":"2","npcName":"%user%"}},"username":"%user%","messageText":"%user% just followed"}
